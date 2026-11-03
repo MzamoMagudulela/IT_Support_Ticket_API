@@ -1,0 +1,181 @@
+{
+  "info": {
+    "name": "Enterprise ITSM Platform API",
+    "_postman_id": "enterprise-itsm-v1-collection",
+    "description": "Production REST API collection for Enterprise IT Service Management and Operations Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "username", "value": "admin", "type": "text" },
+                { "key": "password", "value": "Admin123!", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Service Desk Tickets",
+      "item": [
+        {
+          "name": "List Tickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tickets?page=1&page_size=10",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Ticket (Matrix Priority)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Network switch SFP port flapping in Server Room A\",\n  \"description\": \"Port 24 on Catalyst 9300 experiencing packet drops and CRC errors.\",\n  \"category\": \"Network\",\n  \"impact\": \"HIGH\",\n  \"urgency\": \"CRITICAL\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/tickets", "host": ["{{base_url}}"], "path": ["tickets"] }
+          }
+        },
+        {
+          "name": "Update Ticket Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_status\": \"IN_PROGRESS\",\n  \"comment\": \"Diagnostic optics test initiated by network team.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/tickets/1/status", "host": ["{{base_url}}"], "path": ["tickets", "1", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Incident Operations",
+      "item": [
+        {
+          "name": "List Incidents",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{base_url}}/incidents", "host": ["{{base_url}}"], "path": ["incidents"] }
+          }
+        },
+        {
+          "name": "Declare Major Incident",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"VPN Core Cluster Gateway Outage\",\n  \"description\": \"London concentrator failing authentication handshakes.\",\n  \"affected_service\": \"Global VPN Gateway\",\n  \"severity\": \"SEV1_CRITICAL\",\n  \"is_major\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/incidents", "host": ["{{base_url}}"], "path": ["incidents"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Monitoring & Webhooks",
+      "item": [
+        {
+          "name": "Trigger Telemetry Pulse",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{base_url}}/monitoring/pulse", "host": ["{{base_url}}"], "path": ["monitoring", "pulse"] }
+          }
+        },
+        {
+          "name": "Prometheus Alertmanager Webhook",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiver\": \"itsm-webhook\",\n  \"status\": \"firing\",\n  \"alerts\": [\n    {\n      \"labels\": { \"alertname\": \"HighCPULoad\", \"severity\": \"critical\" },\n      \"annotations\": { \"summary\": \"App server CPU at 96%\" }\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{base_url}}/monitoring/webhook/prometheus", "host": ["{{base_url}}"], "path": ["monitoring", "webhook", "prometheus"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Business Intelligence & Reports",
+      "item": [
+        {
+          "name": "Executive Dashboard KPIs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{base_url}}/reports/dashboard-kpis?days=30", "host": ["{{base_url}}"], "path": ["reports", "dashboard-kpis"] }
+          }
+        },
+        {
+          "name": "Export Tickets CSV",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{base_url}}/reports/export/tickets/csv", "host": ["{{base_url}}"], "path": ["reports", "export", "tickets", "csv"] }
+          }
+        }
+      ]
+    }
+  ]
+}
