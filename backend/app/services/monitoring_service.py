@@ -85,7 +85,9 @@ def create_or_escalate_alert(
 
     # Automatically create an IT Incident if severity is CRITICAL
     if severity == "CRITICAL":
-        incident_number = f"INC-MON-{int(datetime.now(timezone.utc).timestamp()) % 100000}"
+        import uuid
+        unique_suffix = uuid.uuid4().hex[:6].upper()
+        incident_number = f"INC-MON-{datetime.now(timezone.utc).strftime('%m%d%H%M')}-{unique_suffix}"
         incident = Incident(
             incident_number=incident_number,
             title=f"Monitoring Alert: {alert_name} on {device.name}",
@@ -100,6 +102,8 @@ def create_or_escalate_alert(
         db.flush()
         alert.incident_id = incident.id
 
+    db.commit()
+    db.refresh(alert)
     return alert
 
 def generate_simulated_metrics_for_all_devices(db: Session):

@@ -38,6 +38,10 @@ class AssetMaintenanceCreate(BaseModel):
     technician_name: Optional[str] = None
     cost: float = 0.0
 
+class AssetAssignRequest(BaseModel):
+    assigned_user_id: int
+    notes: Optional[str] = None
+
 class AssetRead(AssetBase):
     id: int
     department_name: Optional[str] = None

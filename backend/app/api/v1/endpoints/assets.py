@@ -12,7 +12,7 @@ from app.models.asset import (
     ITService, ConfigurationItem, CIRelationship, AssetStatus, AssetType
 )
 from app.schemas.asset import (
-    AssetCreate, AssetUpdate, AssetRead, AssetMaintenanceCreate,
+    AssetCreate, AssetUpdate, AssetRead, AssetMaintenanceCreate, AssetAssignRequest,
     SoftwareLicenseCreate, SoftwareLicenseRead, ITServiceCreate, ITServiceRead
 )
 from app.services.audit_service import record_audit_log
@@ -169,6 +169,30 @@ def update_asset(
     db.commit()
     db.refresh(asset)
     record_audit_log(db, action="UPDATE", entity_type="ASSET", entity_id=asset.id, user=current_user, request=request)
+    return format_asset_read(asset)
+
+@router.post("/{asset_id}/assign", response_model=AssetRead, dependencies=[Depends(RoleChecker(["admin", "system administrator", "it_manager", "technician"]))])
+def assign_asset(
+    asset_id: int,
+    data: AssetAssignRequest,
+    request: Request,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    asset = db.query(Asset).filter(Asset.id == asset_id, Asset.is_deleted == False).first()
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    asset.assigned_user_id = data.assigned_user_id
+    assignment = AssetAssignment(
+        asset_id=asset.id,
+        user_id=data.assigned_user_id,
+        notes=data.notes or "Reassigned asset"
+    )
+    db.add(assignment)
+    db.commit()
+    db.refresh(asset)
+    record_audit_log(db, action="ASSIGN", entity_type="ASSET", entity_id=asset.id, user=current_user, request=request, new_values={"assigned_to": data.assigned_user_id})
     return format_asset_read(asset)
 
 @router.post("/{asset_id}/maintenance", dependencies=[Depends(RoleChecker(["admin", "system administrator", "it_manager", "technician"]))])

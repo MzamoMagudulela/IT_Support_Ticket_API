@@ -58,3 +58,11 @@ def manager_token():
 @pytest.fixture
 def technician_token():
     return create_access_token(subject="alex.tech", roles=["IT Support Technician"], user_id=3)
+
+@pytest.fixture
+def security_token():
+    return create_access_token(subject="elena.sec", roles=["Security Analyst"], user_id=5)
+
+@pytest.fixture
+def auditor_token():
+    return create_access_token(subject="marcus.audit", roles=["Auditor"], user_id=6)

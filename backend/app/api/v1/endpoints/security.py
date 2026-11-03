@@ -198,7 +198,7 @@ def update_security_incident(
     record_audit_log(db, action="SECURITY_UPDATE", entity_type="SECURITY_INCIDENT", entity_id=s.id, user=current_user, request=request)
     return format_sec_incident(s)
 
-@router.post("/incidents/{incident_id}/evidence", dependencies=[Depends(RoleChecker(["admin", "security_analyst"]))])
+@router.post("/incidents/{incident_id}/evidence", response_model=SecurityEvidenceRead, dependencies=[Depends(RoleChecker(["admin", "security_analyst"]))])
 def add_security_evidence(
     incident_id: int,
     data: SecurityEvidenceCreate,
@@ -218,4 +218,14 @@ def add_security_evidence(
     )
     db.add(ev)
     db.commit()
-    return {"message": "Evidence recorded successfully"}
+    db.refresh(ev)
+    return SecurityEvidenceRead(
+        id=ev.id,
+        security_incident_id=ev.security_incident_id,
+        evidence_type=ev.evidence_type,
+        description=ev.description,
+        file_path=ev.file_path,
+        hash_sha256=ev.hash_sha256,
+        added_by_name=current_user.full_name,
+        created_at=ev.created_at
+    )
