@@ -1,5 +1,13 @@
 # Enterprise ITSM – Intelligent IT Operations & Support Management Platform
 
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB.svg?style=flat&logo=react&logoColor=black)](https://react.dev)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.14-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1.svg?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com)
+[![Tests](https://img.shields.io/badge/Tests-16%20Passed-success.svg?style=flat&logo=pytest&logoColor=white)](https://docs.pytest.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A production-grade, enterprise IT Service Management (ITSM) and IT Operations platform built to simulate a Fortune 500 company's internal IT operations department. Engineered with a modular monolithic architecture, clean REST API, database-driven business intelligence, infrastructure APM telemetry, and cybersecurity operations.
 
 ---
